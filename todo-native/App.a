@@ -1,0 +1,150 @@
+// import { StatusBar } from "expo-status-bar";
+// import { StyleSheet, Text, View } from "react-native";
+// import { ToDoService } from "todo-protocol";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ListRenderItemInfo,
+} from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
+import { ToDoEvents, ToDoItem, ToDoService } from "todo-protocol";
+
+const toDoService = new ToDoService("http://localhost:6900");
+
+export default function App() {
+  const [newTodoText, setNewTodoText] = useState("");
+  const [toDos, setToDos] = useState<ToDoItem[]>([]);
+
+  // const handleCheckboxChange = (index: number) => {
+  //   const todoToUpdate = toDos[index];
+  //   todoToUpdate.isDone = !todoToUpdate.isDone;
+  //   toDoService.update(todoToUpdate.id, todoToUpdate);
+  //   // No need to update via setState, leave that to "UPDATED" subscription
+  // };
+  const handleDelete = (id: string) => {
+    toDoService.remove(id);
+  };
+
+  const handleAdd = () => {
+    toDoService.create({ text: newTodoText, isDone: false });
+    setNewTodoText("");
+  };
+
+  const handleCreated = (createdItem: ToDoItem) => {
+    setToDos((prev) => [...prev, createdItem]);
+  };
+
+  const handleUpdated = (updatedItem: ToDoItem) => {
+    setToDos((prev) => [
+      ...prev.map((item) => (item.id === updatedItem.id ? updatedItem : item)),
+    ]);
+  };
+
+  const handleRemoved = (removedItemId: string) => {
+    setToDos((prev) => [...prev.filter((item) => item.id !== removedItemId)]);
+  };
+
+  // Load when component is mounted
+  useEffect(() => {
+    (async () => {
+      setToDos(await toDoService.fetch());
+
+      // Subscribe to CREATED event
+      toDoService.subscribe(ToDoEvents.CREATED, handleCreated);
+
+      // Subscribe to UPDATED event
+      toDoService.subscribe(ToDoEvents.UPDATED, handleUpdated);
+
+      // Subscribe to REMOVED event
+      toDoService.subscribe(ToDoEvents.REMOVED, handleRemoved);
+    })();
+  }, []);
+
+  const renderRightActions = (id: string) => (
+    <TouchableOpacity
+      onPress={() => handleDelete(id)}
+      style={styles.deleteButton}
+    >
+      <Text style={styles.deleteButtonText}>Delete</Text>
+    </TouchableOpacity>
+  );
+
+  const renderItem = ({ item }: ListRenderItemInfo<ToDoItem>) => (
+    <Swipeable renderRightActions={() => renderRightActions(item.id)}>
+      <View style={styles.todoItem}>
+        <Text>{item.text}</Text>
+      </View>
+    </Swipeable>
+  );
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={toDos}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+        numColumns={2}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Add a new todo"
+        value={newTodoText}
+        onChangeText={(text) => setNewTodoText(text)}
+      />
+      <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
+        <Text style={styles.buttonText}>Add Todo</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  todoItem: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0",
+    margin: 8,
+    padding: 16,
+    borderRadius: 8,
+  },
+  input: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginTop: 16,
+    paddingHorizontal: 8,
+  },
+  addButton: {
+    backgroundColor: "#007BFF",
+    padding: 12,
+    marginTop: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  deleteButton: {
+    backgroundColor: "red",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 80,
+    height: "100%",
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  deleteButtonText: {
+    color: "#fff",
+  },
+});
