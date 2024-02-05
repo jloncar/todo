@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { ToDoEvents, ToDoItem, ToDoService } from "todo-protocol";
 
-const toDoService = new ToDoService("http://localhost:6900");
+const toDoService = new ToDoService((window as any).todo_ws_server);
 
 const ToDoFrontendComponent = () => {
   const [todo, setToDo] = useState<ToDoItem[]>([]);

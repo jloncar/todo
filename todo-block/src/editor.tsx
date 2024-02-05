@@ -14,7 +14,7 @@ import { BlockAttributes, BlockEditProps, BlockSaveProps } from "./types";
 import { ToDoEvents, ToDoItem, ToDoService } from "todo-protocol";
 import { useBlockProps, RichText } from "@wordpress/block-editor";
 
-const toDoService = new ToDoService("http://localhost:6900");
+const toDoService = new ToDoService((window as any).todo_ws_server);
 
 const ToDoBlockEdit: React.FC<BlockEditProps> = (props) => {
   const blockProps = useBlockProps();
