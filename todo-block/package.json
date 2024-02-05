@@ -1,0 +1,24 @@
+{
+  "name": "todo-block",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/scripts.js",
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "todo-protocol": "file:../todo-protocol"
+  },
+  "devDependencies": {
+    "@types/wordpress__blocks": "^12.5.13",
+    "@types/wordpress__components": "^23.0.11",
+    "@types/wordpress__element": "^2.14.1",
+    "@wordpress/scripts": "^27.1.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3"
+  }
+}

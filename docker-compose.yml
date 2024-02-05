@@ -1,0 +1,69 @@
+version: "3"
+
+services:
+  todo-redis:
+    image: "redis:latest"
+    container_name: "todo-redis"
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+
+  todo-mysql:
+    image: "mysql:latest"
+    container_name: "todo-mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: wordpress_db
+      MYSQL_USER: wordpress_user
+      MYSQL_PASSWORD: wordpress_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+
+  todo-wp:
+    image: "wordpress:latest"
+    container_name: "todo-wp"
+    environment:
+      WORDPRESS_DB_HOST: todo-mysql
+      WORDPRESS_DB_USER: wordpress_user
+      WORDPRESS_DB_PASSWORD: wordpress_password
+      WORDPRESS_DB_NAME: wordpress_db
+      WORDPRESS_DEBUG: 1
+    volumes:
+      - ./wordpress:/var/www/html
+      - ./todo-block:/var/www/html/wp-content/plugins
+    ports:
+      - "8080:80"
+    depends_on:
+      - todo-mysql
+    networks:
+      - backend
+
+  wp-cli:
+    depends_on:
+      - todo-mysql
+      - todo-wp
+    image: "wordpress:cli"
+    environment:
+      WORDPRESS_DB_HOST: todo-mysql
+      WORDPRESS_DB_USER: wordpress_user
+      WORDPRESS_DB_PASSWORD: wordpress_password
+      WORDPRESS_DB_NAME: wordpress_db
+      WORDPRESS_DEBUG: 1
+    entrypoint: /bin/sh
+    command: -c "while [ ! -f "/var/www/html/wp-config.php" ]; do sleep 5; done; pwd && ls -lah && wp core install --url=\"http://localhost:8080\" --title=\"ToDo\" --admin_name=admin --admin_password=admin --admin_email=you@domain.com"
+    volumes:
+      - ./wordpress:/var/www/html
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  mysql_data:
+  wordpress_data:

@@ -1,0 +1,11 @@
+wordpress/
+!wordpress/.gitkeep
+
+todo-block/dist/
+todo-block/node_modules/
+
+todo-backend/dist/
+todo-backend/node_modules/
+
+todo-protocol/dist/
+todo-protocol/node_modules/
