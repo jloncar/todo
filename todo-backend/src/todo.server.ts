@@ -33,7 +33,6 @@ export class ToDoServer {
   async create(toDoItem: Omit<ToDoItem, "id">): Promise<void> {
     const todo = await this.todoRepository.create(toDoItem);
     this.io.emit(ToDoEvents.CREATED, todo);
-    console.log("Emitted created for ", todo);
   }
 
   async update(id: string, toDoItem: Omit<ToDoItem, "id">): Promise<void> {

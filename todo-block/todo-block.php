@@ -29,11 +29,11 @@ function enqueue_block_editor_assets() {
         filemtime(plugin_dir_path(__FILE__) . 'dist/editor.js')
     );
     $inline_script_editor = 'window.todo_ws_server = "abc";';
-    wp_add_inline_script('todo-block', TODO_INLINE_SCRIPT);
+    wp_add_inline_script('todo-block', TODO_INLINE_SCRIPT, "before");
 }
 
 function enqueue_frontend_inline_script() {
-  wp_add_inline_script('todo-block-fe', TODO_INLINE_SCRIPT);
+  wp_add_inline_script('todo-block-fe', TODO_INLINE_SCRIPT, "before");
 }
 
 

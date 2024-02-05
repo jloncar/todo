@@ -43,7 +43,6 @@ export class ToDoService {
   }
 
   update(id: string, toDoItem: Omit<ToDoItem, "id">): void {
-    console.log("updated", id, toDoItem);
     this.io.emit(ToDoEvents.UPDATE, id, toDoItem);
   }
 
