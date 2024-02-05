@@ -1,4 +1,6 @@
-export interface BlockAttributes {}
+export interface BlockAttributes {
+  heading: string;
+}
 
 export interface BlockEditProps {
   attributes: BlockAttributes;

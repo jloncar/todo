@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@wordpress/block-editor": "^12.18.2",
     "todo-protocol": "file:../todo-protocol"
   },
   "devDependencies": {

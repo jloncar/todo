@@ -12,10 +12,13 @@ import {
 import { useEffect, useState } from "@wordpress/element";
 import { BlockAttributes, BlockEditProps, BlockSaveProps } from "./types";
 import { ToDoEvents, ToDoItem, ToDoService } from "todo-protocol";
+import { useBlockProps, RichText } from "@wordpress/block-editor";
 
 const toDoService = new ToDoService("http://localhost:6900");
 
-const BlockEdit: React.FC<BlockEditProps> = (props) => {
+const ToDoBlockEdit: React.FC<BlockEditProps> = (props) => {
+  const blockProps = useBlockProps();
+  const { attributes, setAttributes } = props;
   const [newTodoText, setNewTodoText] = useState("");
   const [toDos, setToDos] = useState<ToDoItem[]>([]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -66,7 +69,15 @@ const BlockEdit: React.FC<BlockEditProps> = (props) => {
   }, []);
 
   return (
-    <div>
+    <div {...blockProps}>
+      <RichText
+        tagName="h2"
+        value={attributes.heading}
+        allowedFormats={["core/bold", "core/italic"]}
+        onChange={(heading) => setAttributes({ heading })}
+        placeholder="To Do heading..."
+      />
+
       {toDos.map((todo, index) => (
         <Flex
           key={index}
@@ -117,8 +128,11 @@ const BlockEdit: React.FC<BlockEditProps> = (props) => {
   );
 };
 
-const BlockSave: React.FC<BlockSaveProps> = () => (
-  <div className="todo-fe-wrapper" />
+const ToDoBlockSave: React.FC<BlockSaveProps> = ({ attributes }) => (
+  <div {...useBlockProps.save()}>
+    <RichText.Content tagName="h2" value={attributes.heading} />
+    <div className="todo-fe-wrapper" />
+  </div>
 );
 
 registerBlockType<BlockAttributes>("todo-block/my-block", {
@@ -126,8 +140,13 @@ registerBlockType<BlockAttributes>("todo-block/my-block", {
   icon: "smiley",
   category: "common",
   attributes: {
-    content: {},
+    heading: {
+      type: "string",
+      source: "html",
+      selector: "h2",
+      default: "To Do",
+    },
   },
-  edit: BlockEdit,
-  save: BlockSave,
+  edit: ToDoBlockEdit,
+  save: ToDoBlockSave,
 });
