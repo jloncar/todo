@@ -8,6 +8,11 @@ The project comprises three key applications: WordPress (with a custom-built Gut
 
 To facilitate communication among different applications and the backend, an npm package was developed. This package acts as a Socket.IO client for applications, simplifying access to backend services and encapsulating core functionalities.
 
+## Demo
+See it in action:
+
+![Demo](demo.gif)
+
 ## Requirements
 
 - Node 20 (`nvm use` in root folder)
